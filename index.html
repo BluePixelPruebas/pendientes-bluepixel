@@ -114,7 +114,6 @@ const PERSONAS = [
 ]
 const P = [
   // 1. Antes de mover el dominio
-  ["1.1","P0","ID del contenedor de Google Tag Manager","Definir <code>VITE_GTM_ID</code> en Vercel y recompilar. Después, revisar en GTM que las etiquetas respeten el consentimiento (Consent Mode v2 ya está instalado).",["cano","rocketing"]],
   ["1.2","P0","Conectar los formularios","Definir <code>VITE_FORM_ENDPOINT</code> (webhook de n8n al ERP) y probar un envío real del contacto, el cotizador, el Diagnóstico BluePixel y «Envíame el resumen».",["cano","claude"]],
   ["1.4","P0","Destino de la pauta y landings /lp/*","Decidir si los anuncios van a <code>cotiza.bluepixel.mx</code> o a <code>bluepixel.ai/lp/*</code>. Esas landings no existen en el sitio nuevo: si se eligen, hay que construirlas antes del lanzamiento.",["maria","claude"]],
   ["1.5","P0","Subir las redirecciones de .mx","Bulk Redirects de Cloudflare con <code>scripts/datos/redirecciones-bluepixel-mx-cloudflare.csv</code> (812 filas: URLs del sitemap de .mx, 301 antiguas de Webflow y una regla general). Quitar la regla bluepixel.mx→www. No tocar <code>cotiza.</code>, <code>n8n.</code> ni <code>api.erp.</code> Probar con Cloudflare Trace que la regla general no le gane a una específica. Guía: <code>PLAN_PUBLICACION_BLUEPIXEL_AI.md</code>.",["genaro","cano"]],
@@ -159,7 +158,7 @@ const P = [
   ["9.5","P2","Volúmenes en Keyword Planner","Confirmar que las keywords ancla de «Datos y dashboards» y de «Estrategia, ROI y procesos» tienen búsqueda en México antes de escribir más artículos.",["daniel","fabian"]],
   ["9.6","P2","Revisar los 3 artículos nuevos de IA confiable","Gobierno de agentes, evitar alucinaciones y evaluar un agente antes de producción, en español e inglés.",["daniel","fabian"]],
   ["10.1","P1","Medir Core Web Vitals después del deploy","Medición local: SEO 100, buenas prácticas 100, accesibilidad 96–97, rendimiento 49–69. Falta medir en producción.",["claude"]],
-  ["10.6","P1","Animaciones más ligeras en celular","GSAP y motion consumen unos 3.2 s de procesador en un celular medio. Iniciarlas después de que la página carga.",["alan"]],
+  ["10.6","P1","Primer pintado más rápido en celular (CSS y fuente)","Ya se resolvió lo más pesado (8-nov): el reel del Home baja de 12 a 3.8 MB en celular y las animaciones fuera de la primera pantalla se preparan después de cargar. Lo que falta para el LCP: CSS crítico en línea (hoy 210 KB bloquean el primer pintado) y precargar la fuente Onest.",["alan"]],
   ["10.4","P2","Borrar componentes sin uso","<code>FiberMorph</code>, <code>ParticleField</code>, <code>ProcessMap</code>, <code>UxAudit</code> y <code>UxDifference</code>.",["alan"]],
   ["10.5","P2","23 advertencias de lint en componentes","Demos de UX, ProcessMap, ChatBot y sistema de diseño: tocarlas cambia comportamiento.",["alan"]],
   // 11. Legal e ISO
@@ -173,12 +172,19 @@ const P = [
   ["12.3","P0","Probar redirecciones de .mx con UTMs y gclid","Muestra de URLs: 301 directo, sin cadenas y conservando los parámetros.",["claude"]],
   ["12.4","P1","Vigilar 404 y cobertura durante 2 a 4 semanas","",["fabian","claude"]],
   // 13. ChatGPT Ads
-  ["13.1","P1","Cuenta de ChatGPT Ads y Pixel ID","Alta en ads.openai.com, crear el Pixel ID en conversiones y pasarlo a Cano para <code>VITE_OPENAI_PIXEL_ID</code>. El código del sitio ya está listo.",["rocketing","cano"]],
   ["13.2","P0","Aviso de privacidad: OpenAI","La etiqueta de OpenAI lee datos del formulario y los envía cifrados a OpenAI. Confirmar que el aviso cubre compartir datos con plataformas de publicidad.",["legal"]],
   ["13.3","P1","Precio del catálogo de servicios","El playbook propone «desde $5,000 USD». Va sin precio hasta que Dirección lo apruebe.",["maria"]],
   ["13.4","P1","Subir el catálogo por SFTP","Desde Ads Manager. Archivo listo: <code>scripts/datos/feed-chatgpt-ads-servicios.csv</code> (16 columnas oficiales, 4 servicios).",["rocketing"]],
   ["13.5","P1","No usar el código de la etiqueta del playbook","El sitio ya usa la integración oficial (<code>bzrcdn.openai.com</code>, evento <code>lead_created</code>).",["rocketing"]],
   ["13.6","P2","Conversiones fuera de línea de ChatGPT Ads","Desde n8n, avisar a OpenAI cuando un lead pase a calificado o contrato. Los leads ya llegan al ERP con <code>oppref</code>.",["cano"]],
+  // Etiquetas en GTM (GTM-P4B4PNS, el mismo contenedor de .mx y cotiza.); revisión del 8-nov sobre la versión 66
+  ["G.1","P0","GTM: quitar la copia del píxel de OpenAI","El sitio ya carga el píxel oficial (ID 4iKXgBn2UQ7LqVGJiqMCN7) y manda <code>lead_created</code> solo con lead calificado. En GTM, pausar la etiqueta HTML que carga oaiq y la plantilla que manda <code>lead_created</code> al ver la página de gracias: con las dos, OpenAI contaría también los leads descalificados y duplicados.",["rocketing"]],
+  ["G.2","P0","GTM: conversiones de Google Ads por evento, no por URL","Hoy se disparan al cargar cualquier URL con «gracias» o «thank-you»: cuentan leads descalificados, recargas y visitas directas. Cambiar el activador al evento <code>lead_created</code> con <code>lead_calificado = true</code> como primaria; el resto de los leads, como secundaria (regla 10). Revisar que cotiza.bluepixel.mx siga midiendo igual.",["rocketing"]],
+  ["G.3","P0","GTM: respetar el consentimiento de cookies","Hotjar, TikTok, Meta, Apollo, Clarity y el script $wc se cargan en todas las páginas sin esperar el consentimiento, y el aviso del sitio dice que nada se activa hasta que la persona decide. Configurar en cada etiqueta «Requerir consentimiento adicional» (analytics_storage o ad_storage). Las de Google ya lo respetan con Consent Mode v2.",["rocketing","legal"]],
+  ["G.4","P1","GTM: quitar etiquetas que no aportan","TikTok y Meta: no hay pauta en esos canales (la estrategia B2B es LinkedIn y Google Search). Hotjar: duplica a Clarity, que ya graba sesiones y mapas de calor. Las tres pesan en cada visita.",["rocketing"]],
+  ["G.5","P1","GTM: activadores con los eventos del sitio nuevo","Los activadores actuales usan clases e ids de Webflow (botón de WhatsApp, wf-form-Desarrollo-Web, email-form-2) que no existen en el sitio nuevo. Usar los eventos del dataLayer: <code>lead_created</code>, <code>form_start</code>, <code>whatsapp_click</code>, <code>cta_click</code> y <code>descarga_recurso</code>. Borrar los 51 escuchas de formularios y clics que corren en todas las páginas.",["rocketing"]],
+  ["G.6","P1","GTM: LinkedIn Insight Tag en todas las páginas","Hoy LinkedIn solo se activa con un formulario de Webflow. La etiqueta base debe ir en todas las páginas (con consentimiento) para construir audiencias ABM, y la conversión con <code>lead_created</code> calificado.",["rocketing"]],
+  ["G.7","P2","Mixpanel en cotiza.bluepixel.mx","En .mx y cotiza graba el 100 % de las sesiones y captura todo sin pedir consentimiento. En el sitio nuevo ya va con consentimiento, sin grabación (la hace Clarity) y sin capturar texto. Igualar cotiza.",["rocketing","cano"]],
   // Decisiones de Dirección
   ["D.1","P1","SLA de primer contacto","¿2 o 4 horas hábiles para los leads de presupuesto alto? Hoy hay dos cifras distintas.",["maria"]],
   ["D.2","P0","Abrir el MR y coordinar la semana del 9 al 13","Seguimiento diario de los P0 con Cano, Genaro y Alan.",["fabian"]],
