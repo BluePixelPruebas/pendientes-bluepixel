@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Pendientes bluepixel.ai</title>
+<style>
+:root{
+  --bg:#f6f7f9;--card:#fff;--fg:#0b1220;--quiet:#5b6577;--line:#e3e7ee;--accent:#0a6cff;--accent-soft:#e8f0ff;
+  --p0:#c62828;--p0-bg:#fdecec;--p1:#9a6700;--p1-bg:#fff6dd;--p2:#3d5a80;--p2-bg:#eaf0f7;--ok:#1f8a4c;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0b0f17;--card:#121826;--fg:#e8ecf3;--quiet:#9aa5b8;--line:#232c3d;--accent:#5a9bff;--accent-soft:#16233d;
+  --p0:#ff8a80;--p0-bg:#3a1717;--p1:#ffd166;--p1-bg:#3a2e10;--p2:#9fb8dd;--p2-bg:#1b2638;--ok:#5fd394;
+}}
+:root[data-theme="dark"]{
+  --bg:#0b0f17;--card:#121826;--fg:#e8ecf3;--quiet:#9aa5b8;--line:#232c3d;--accent:#5a9bff;--accent-soft:#16233d;
+  --p0:#ff8a80;--p0-bg:#3a1717;--p1:#ffd166;--p1-bg:#3a2e10;--p2:#9fb8dd;--p2-bg:#1b2638;--ok:#5fd394;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:16px}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+code{font:13px ui-monospace,Consolas,monospace;background:var(--accent-soft);padding:1px 5px;border-radius:4px;word-break:break-word}
+a{color:var(--accent)}
+.layout{display:grid;grid-template-columns:260px minmax(0,1fr);gap:32px;max-width:1180px;margin:0 auto;padding:32px 24px 80px}
+nav.menu{position:sticky;top:16px;align-self:start;max-height:calc(100vh - 32px);overflow:auto}
+.menu h2{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--quiet);margin:0 0 10px}
+.menu ul{list-style:none;margin:0;padding:0}
+.menu a{display:flex;justify-content:space-between;gap:8px;padding:7px 10px;border-radius:8px;color:var(--fg);text-decoration:none}
+.menu a:hover,.menu a.activo{background:var(--accent-soft);color:var(--accent)}
+.menu .cnt{font-variant-numeric:tabular-nums;color:var(--quiet);font-size:13px}
+.menu .cnt b{color:var(--p0);font-weight:600}
+header.top h1{font-size:clamp(1.6rem,3vw,2.2rem);line-height:1.15;margin:0 0 8px;letter-spacing:-.01em}
+header.top p{margin:0;color:var(--quiet);max-width:70ch}
+.resumen{display:flex;flex-wrap:wrap;gap:10px;margin:20px 0 8px}
+.chip{background:var(--card);border:1px solid var(--line);border-radius:999px;padding:6px 14px;font-size:14px}
+.chip b{font-variant-numeric:tabular-nums}
+.leyenda{font-size:13px;color:var(--quiet);margin-top:10px}
+.filtros{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 0}
+.filtros button{font:inherit;font-size:14px;border:1px solid var(--line);background:var(--card);color:var(--fg);border-radius:999px;padding:6px 14px;cursor:pointer}
+.filtros button[aria-pressed="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+section.persona{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:24px;margin-top:24px}
+section.persona h2{margin:0;font-size:1.35rem;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+section.persona h2 small{font-size:14px;color:var(--quiet);font-weight:400}
+.rol{margin:4px 0 0;color:var(--quiet);font-size:14px}
+.grupo{margin:20px 0 6px;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--quiet)}
+ol.items{list-style:none;margin:0;padding:0}
+.item{display:grid;grid-template-columns:auto 1fr;gap:12px;padding:14px 0;border-top:1px solid var(--line)}
+.item:first-child{border-top:0}
+.item input{width:18px;height:18px;margin-top:3px;accent-color:var(--ok);cursor:pointer}
+.item .tit{font-weight:600}
+.item .meta{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:4px}
+.num{font-size:12px;color:var(--quiet);font-variant-numeric:tabular-nums}
+.pr{font-size:11px;font-weight:700;border-radius:4px;padding:1px 6px}
+.pr.P0{color:var(--p0);background:var(--p0-bg)}.pr.P1{color:var(--p1);background:var(--p1-bg)}.pr.P2{color:var(--p2);background:var(--p2-bg)}
+.con{font-size:12px;color:var(--quiet)}
+.item p{margin:4px 0 0;color:var(--quiet)}
+.item.hecho .tit,.item.hecho p{text-decoration:line-through;opacity:.55}
+.oculto{display:none!important}
+.tema{position:fixed;right:16px;bottom:16px;font:inherit;font-size:13px;border:1px solid var(--line);background:var(--card);color:var(--fg);border-radius:999px;padding:8px 14px;cursor:pointer}
+footer{margin-top:32px;color:var(--quiet);font-size:13px}
+@media (max-width:860px){
+  .layout{grid-template-columns:1fr;padding:20px 16px 80px;gap:16px}
+  nav.menu{position:static;max-height:none}
+  .menu ul{display:flex;flex-wrap:wrap;gap:6px}
+  .menu a{border:1px solid var(--line);background:var(--card);padding:6px 12px;border-radius:999px}
+  section.persona{padding:18px}
+}
+@media print{nav.menu,.filtros,.tema{display:none}.layout{display:block}section.persona{break-inside:avoid-page}}
+</style>
+</head>
+<body>
+<div class="layout">
+  <nav class="menu" aria-label="Pendientes por persona">
+    <h2>Por persona</h2>
+    <ul id="menu"></ul>
+  </nav>
+  <main>
+    <header class="top">
+      <h1>Pendientes del lanzamiento de bluepixel.ai</h1>
+      <p>Actualizado el 8 de noviembre de 2026. Lanzamiento acordado: <b>lunes 16 de noviembre</b>. Los P0 deben quedar cerrados el <b>viernes 13</b>.</p>
+      <div class="resumen" id="resumen"></div>
+      <p class="leyenda"><b>P0</b> bloquea el lanzamiento · <b>P1</b> importante, puede ir justo después · <b>P2</b> mejora. Las casillas que marques se guardan solo en tu navegador.</p>
+      <div class="filtros" role="group" aria-label="Filtrar por prioridad">
+        <button type="button" data-f="todos" aria-pressed="true">Todos</button>
+        <button type="button" data-f="P0" aria-pressed="false">Solo P0</button>
+        <button type="button" data-f="abiertos" aria-pressed="false">Ocultar los que marqué</button>
+      </div>
+    </header>
+    <div id="personas"></div>
+    <footer>Fuente: lista de pendientes del sitio (PDF del 7-nov) y actas de las juntas del 5 y 6-nov. Un punto compartido aparece en la sección de cada responsable con el mismo número.</footer>
+  </main>
+</div>
+<button class="tema" type="button" id="tema">Cambiar tema</button>
+
+<script>
+// Cada pendiente: número, prioridad, título, detalle (HTML) y responsables (ids de PERSONAS)
+const PERSONAS = [
+  { id: "cano", nombre: "Cano", rol: "Infraestructura, Vercel, n8n y formularios" },
+  { id: "genaro", nombre: "Genaro", rol: "DNS y redirecciones en Cloudflare" },
+  { id: "alan", nombre: "Alan", rol: "Código del sitio, diseño y material visual" },
+  { id: "maria", nombre: "María (Dirección)", rol: "Decisiones de negocio y contenido propio" },
+  { id: "fabian", nombre: "Fabián", rol: "Marketing: coordinación, cuentas y revisión" },
+  { id: "rocketing", nombre: "Rocketing", rol: "Pauta, GTM y ChatGPT Ads" },
+  { id: "admin", nombre: "Administración", rol: "Autorizaciones por contrato" },
+  { id: "legal", nombre: "Legal e ISO", rol: "Aviso de privacidad, páginas legales y SGSI" },
+  { id: "pablo", nombre: "Pablo", rol: "SEO, contenido y cuestionario" },
+  { id: "diana", nombre: "Diana", rol: "Microsoft Ads" },
+  { id: "giselle", nombre: "Giselle", rol: "Landing de recursos descargables" },
+  { id: "comercial", nombre: "Comercial", rol: "Reseñas de clientes" },
+  { id: "claude", nombre: "Claude", rol: "Lo que se hace en cuanto llegue el dato o el deploy" },
+]
+const P = [
+  // 1. Antes de mover el dominio
+  ["1.1","P0","ID del contenedor de Google Tag Manager","Definir <code>VITE_GTM_ID</code> en Vercel y recompilar. Después, revisar en GTM que las etiquetas respeten el consentimiento (Consent Mode v2 ya está instalado).",["cano","rocketing"]],
+  ["1.2","P0","Conectar los formularios","Definir <code>VITE_FORM_ENDPOINT</code> (webhook de n8n al ERP) y probar un envío real del contacto, el cotizador, el Diagnóstico BluePixel y «Envíame el resumen».",["cano","claude"]],
+  ["1.4","P0","Destino de la pauta y landings /lp/*","Decidir si los anuncios van a <code>cotiza.bluepixel.mx</code> o a <code>bluepixel.ai/lp/*</code>. Esas landings no existen en el sitio nuevo: si se eligen, hay que construirlas antes del lanzamiento.",["maria","claude"]],
+  ["1.5","P0","Subir las redirecciones de .mx","Bulk Redirects de Cloudflare con <code>scripts/datos/redirecciones-bluepixel-mx-cloudflare.csv</code> (812 filas: URLs del sitemap de .mx, 301 antiguas de Webflow y una regla general). Quitar la regla bluepixel.mx→www. No tocar <code>cotiza.</code>, <code>n8n.</code> ni <code>api.erp.</code> Probar con Cloudflare Trace que la regla general no le gane a una específica. Guía: <code>PLAN_PUBLICACION_BLUEPIXEL_AI.md</code>.",["genaro","cano"]],
+  ["1.6","P0","Variables de producción en Vercel","<code>VITE_SITE_URL=https://bluepixel.ai</code> y <code>VITE_INDEXABLE=true</code>, solo en producción.",["cano"]],
+  ["1.7","P0","Primer build en Vercel con el prerender","El log debe decir «prerender del contenido: 262 de 262». Si falta memoria, bajar <code>PARALELO</code> en <code>scripts/prerender-cuerpo.mjs</code>.",["cano","claude"]],
+  ["1.8","P0","MR de develop a test","19 commits (blog, dominio, SEO, prerender, ChatGPT Ads, temas del blog, webinar, redirecciones y ajustes de diseño). Fabián lo abre; Alan revisa sobre todo el prerender y la hidratación. Después, el MR de test a main es el paso a producción.",["fabian","alan"]],
+  ["1.9","P1","Alerta a Comercial por presupuesto alto","En n8n, prioridad máxima cuando el presupuesto pase de $2.4M MXN. El SLA (2 o 4 horas) lo decide Dirección (punto D.1).",["cano"]],
+  // 2. Junta con María (5-nov)
+  ["2.1","P0","Logos y casos autorizados por contrato","Hoy solo HIR Casa tiene autorización expresa. Confirmar qué logos del carrusel y qué casos se pueden mostrar.",["admin"]],
+  ["2.2","P0","Respaldo del «#1 UX/UI en México» de Sortlist","El Home lo afirma. Guardar la constancia (correo, certificado o captura del ranking) antes de publicar.",["fabian"]],
+  ["2.3","P1","Imágenes de los pasos del proceso de cada capacidad","Hoy tienen un fondo provisional.",["alan"]],
+  ["2.4","P1","«Semana a semana» con más color","",["alan"]],
+  ["2.5","P1","Fotos y videos reales del equipo","",["fabian","maria"]],
+  ["2.6","P1","Un video por servicio","",["alan","maria"]],
+  ["2.7","P1","Caso de Dashboards con una captura solo de los tableros","",["alan"]],
+  ["2.8","P1","Video de HIR Casa sin la etiqueta grabada","",["alan"]],
+  ["2.9","P1","Caso del marketplace de palcos con video","Administración debe autorizarlo.",["alan","admin"]],
+  ["2.10","P1","Cuestionario «Pruébalo»","",["pablo"]],
+  ["2.11","P2","Premio nuevo en Reconocimientos y más reseñas en Clutch","Hoy Clutch tiene 4.9 con 29 reseñas.",["fabian","comercial"]],
+  ["2.12","P2","Para después (María: «no ahorita»)","Ejemplo por paso en «Cómo funciona» de UX/UI y glosario de términos.",["pablo","alan"]],
+  // 3. Junta de estrategia (6-nov)
+  ["3.1","P1","Webinar «UX en la era agéntica»: fecha y enlace de Luma","La página ya está hecha en <code>/eventos/ux-en-la-era-agentica</code>, oculta. Con la fecha y hora definitivas (se propuso el viernes 20-nov, 10:00) y el enlace de Luma se publica en minutos con schema Event. Decidir también si se enlaza desde el Home.",["maria","fabian","claude"]],
+  ["3.2","P1","Videos cortos de María para GEO","«¿Qué es un MCP?», «¿Qué es un arnés?», «¿Qué es un agente autónomo?». En YouTube y en el sitio, con transcripción y schema VideoObject.",["maria","claude"]],
+  ["3.3","P0","Cuidar el SEO en el lanzamiento","El mapeo de 301 está listo (812 reglas, 0 destinos rotos). Falta subirlo (1.5) y probarlo en vivo (12.3).",["genaro","claude"]],
+  ["3.4","P0","Lanzamiento el lunes 16 de noviembre","Para llegar, los puntos 1.1 a 1.8 cerrados el viernes 13. Lo que se publica es el sitio de Alan (el acta dice «Astro BPDS», pero ese sitio ya no se usa).",["fabian","cano"]],
+  ["3.5","P1","Microsoft Ads (Bing)","María autorizó reactivarlo con el mismo presupuesto (10-nov). La etiqueta UET va en GTM respetando el consentimiento; la conversión principal, solo con lead calificado.",["diana","fabian"]],
+  ["3.6","P1","Landing para los recursos descargables de María (11-nov)","Definir qué material se ofrece y si vive en bluepixel.ai. Si va en el sitio: primero se entrega el recurso, correo opcional y sin contenido bloqueado.",["giselle","cano","claude"]],
+  // 4 a 6. SEO, contenido y rendimiento
+  ["4.5","P1","Aprobar el diseño de las imágenes para redes","246 generadas en <code>public/og/p/</code> (marca, sección, título y portada).",["fabian","maria"]],
+  ["4.8","P2","Borrar 13 MB de medios sin uso","<code>video-marca.mp4</code>, <code>caso-04-2.mp4</code>, <code>semana-0[1-4].webp</code>, 5 fotos de <code>unete/</code> y otra de casos.",["alan"]],
+  ["5.6","P2","Autores reales en los artículos","Hoy el autor es «BluePixel». Con nombres y cargos se ponen como Person (mejora la confianza ante Google).",["fabian","claude"]],
+  ["5.9","P0","Validar todo después del deploy","Rich Results Test de Google y validator.schema.org, una página por tipo.",["claude"]],
+  ["6.1","P1","Revisar títulos y descripciones SEO del blog","115 títulos y 12 descripciones en <code>scripts/datos/titulos-seo-blog.json</code>.",["fabian"]],
+  ["6.3","P1","Artículos que compiten entre sí","Con la exportación por URL de Search Console, decidir cuáles fusionar y redirigir.",["fabian","claude"]],
+  ["6.5","P0","Probar en producción las respuestas del servidor","Una URL inexistente debe dar 404 real; <code>/aviso-de-privacidad</code> y <code>/casos-de-exito</code>, 301.",["claude"]],
+  ["6.6","P1","¿Faltan artículos?","Se hablaba de 217; el sitemap de .mx al 6-nov lista 174 y son los que se migraron.",["fabian"]],
+  ["8.3","P1","Datos de la empresa iguales en todos lados","El día del lanzamiento, cambiar el sitio web a bluepixel.ai en Clutch, Sortlist, LinkedIn y Google Business Profile.",["fabian"]],
+  ["8.5","P2","Backlinks desde dominios corporativos","",["pablo"]],
+  ["9.2","P1","Revisar la FAQ nueva del Home","Desde 2017, los 4 servicios con plazos, IMPATH™ y sin la promesa de 2 horas.",["fabian"]],
+  ["9.3","P1","Texto principal del Home","Hoy: «Evolucionamos tu plataforma digital en ventaja competitiva». Texto aprobado antes: «Agentes de IA y software empresarial que evolucionan contigo». ¿Cuál se queda?",["maria","fabian"]],
+  ["9.4","P1","Quitar CyberVadis del pie de Webflow en .mx","Mientras .mx siga en línea antes del cambio de dominio.",["fabian","cano"]],
+  ["9.5","P2","Volúmenes en Keyword Planner","Confirmar que las keywords ancla de «Datos y dashboards» y de «Estrategia, ROI y procesos» tienen búsqueda en México antes de escribir más artículos.",["pablo","fabian"]],
+  ["9.6","P2","Revisar los 3 artículos nuevos de IA confiable","Gobierno de agentes, evitar alucinaciones y evaluar un agente antes de producción, en español e inglés.",["fabian","pablo"]],
+  ["10.1","P1","Medir Core Web Vitals después del deploy","Medición local: SEO 100, buenas prácticas 100, accesibilidad 96–97, rendimiento 49–69. Falta medir en producción.",["claude"]],
+  ["10.6","P1","Animaciones más ligeras en celular","GSAP y motion consumen unos 3.2 s de procesador en un celular medio. Iniciarlas después de que la página carga.",["alan"]],
+  ["10.4","P2","Borrar componentes sin uso","<code>FiberMorph</code>, <code>ParticleField</code>, <code>ProcessMap</code>, <code>UxAudit</code> y <code>UxDifference</code>.",["alan"]],
+  ["10.5","P2","23 advertencias de lint en componentes","Demos de UX, ProcessMap, ChatBot y sistema de diseño: tocarlas cambia comportamiento.",["alan"]],
+  // 11. Legal e ISO
+  ["11.1","P1","Correo de seguridad y security.txt","Con el correo definido se publica <code>/.well-known/security.txt</code>.",["legal","claude"]],
+  ["11.2","P1","Ajustes a aviso, términos y política del SGSI","Documento «ISO 27001: ajustes a las páginas legales del sitio».",["legal"]],
+  ["11.4","P2","¿Indexar la política del SGSI?","",["legal"]],
+  ["11.5","P2","Sello ISO 27001 solo con el certificado","",["legal"]],
+  // 12. Lanzamiento y después
+  ["12.1","P0","Search Console","Propiedad de bluepixel.ai, enviar el sitemap y hacer el cambio de dirección desde .mx.",["fabian"]],
+  ["12.2","P0","Bing Webmaster e IndexNow","Fabián da acceso a la cuenta; Claude envía las URLs.",["fabian","claude"]],
+  ["12.3","P0","Probar redirecciones de .mx con UTMs y gclid","Muestra de URLs: 301 directo, sin cadenas y conservando los parámetros.",["claude"]],
+  ["12.4","P1","Vigilar 404 y cobertura durante 2 a 4 semanas","",["fabian","claude"]],
+  // 13. ChatGPT Ads
+  ["13.1","P1","Cuenta de ChatGPT Ads y Pixel ID","Alta en ads.openai.com, crear el Pixel ID en conversiones y pasarlo a Cano para <code>VITE_OPENAI_PIXEL_ID</code>. El código del sitio ya está listo.",["rocketing","cano"]],
+  ["13.2","P0","Aviso de privacidad: OpenAI","La etiqueta de OpenAI lee datos del formulario y los envía cifrados a OpenAI. Confirmar que el aviso cubre compartir datos con plataformas de publicidad.",["legal"]],
+  ["13.3","P1","Precio del catálogo de servicios","El playbook propone «desde $5,000 USD». Va sin precio hasta que Dirección lo apruebe.",["maria"]],
+  ["13.4","P1","Subir el catálogo por SFTP","Desde Ads Manager. Archivo listo: <code>scripts/datos/feed-chatgpt-ads-servicios.csv</code> (16 columnas oficiales, 4 servicios).",["rocketing"]],
+  ["13.5","P1","No usar el código de la etiqueta del playbook","El sitio ya usa la integración oficial (<code>bzrcdn.openai.com</code>, evento <code>lead_created</code>).",["rocketing"]],
+  ["13.6","P2","Conversiones fuera de línea de ChatGPT Ads","Desde n8n, avisar a OpenAI cuando un lead pase a calificado o contrato. Los leads ya llegan al ERP con <code>oppref</code>.",["cano"]],
+  // Decisiones de Dirección
+  ["D.1","P1","SLA de primer contacto","¿2 o 4 horas hábiles para los leads de presupuesto alto? Hoy hay dos cifras distintas.",["maria"]],
+  ["D.2","P0","Abrir el MR y coordinar la semana del 9 al 13","Seguimiento diario de los P0 con Cano, Genaro y Alan.",["fabian"]],
+]
+const nombre = Object.fromEntries(PERSONAS.map((p) => [p.id, p.nombre]))
+const orden = { P0: 0, P1: 1, P2: 2 }
+const clave = (n) => "bp-pend-" + n
+let marcados = {}
+try { marcados = JSON.parse(localStorage.getItem("bp-pendientes") || "{}") } catch {}
+const guardar = () => { try { localStorage.setItem("bp-pendientes", JSON.stringify(marcados)) } catch {} }
+
+const $personas = document.getElementById("personas"), $menu = document.getElementById("menu")
+for (const per of PERSONAS) {
+  const suyos = P.filter((x) => x[4].includes(per.id)).sort((a, b) => orden[a[1]] - orden[b[1]])
+  if (!suyos.length) continue
+  const p0 = suyos.filter((x) => x[1] === "P0").length
+  $menu.insertAdjacentHTML("beforeend", `<li><a href="#${per.id}"><span>${per.nombre}</span><span class="cnt">${p0 ? `<b>${p0}</b> · ` : ""}${suyos.length}</span></a></li>`)
+  const grupos = [["P0", "Urgente: antes del viernes 13"], ["P1", "Importante"], ["P2", "Mejoras"]]
+  let html = `<section class="persona" id="${per.id}" aria-labelledby="h-${per.id}"><h2 id="h-${per.id}">${per.nombre} <small>${suyos.length} pendientes${p0 ? `, ${p0} urgentes` : ""}</small></h2><p class="rol">${per.rol}</p>`
+  for (const [pr, etq] of grupos) {
+    const g = suyos.filter((x) => x[1] === pr)
+    if (!g.length) continue
+    html += `<p class="grupo" data-pr="${pr}">${etq}</p><ol class="items">`
+    for (const [n, , tit, det, resp] of g) {
+      const otros = resp.filter((r) => r !== per.id).map((r) => nombre[r])
+      html += `<li class="item" data-n="${n}" data-pr="${pr}"><input type="checkbox" aria-label="Marcar ${n} como hecho" data-n="${n}"><div><div class="meta"><span class="num">${n}</span><span class="pr ${pr}">${pr}</span>${otros.length ? `<span class="con">con ${otros.join(", ")}</span>` : ""}</div><div class="tit">${tit}</div>${det ? `<p>${det}</p>` : ""}</div></li>`
+    }
+    html += `</ol>`
+  }
+  $personas.insertAdjacentHTML("beforeend", html + `</section>`)
+}
+const total = P.length, tP0 = P.filter((x) => x[1] === "P0").length
+const pintarResumen = () => {
+  const hechos = P.filter((x) => marcados[x[0]]).length
+  document.getElementById("resumen").innerHTML = `<span class="chip"><b>${total}</b> pendientes</span><span class="chip"><b>${tP0}</b> urgentes (P0)</span><span class="chip"><b>${hechos}</b> marcados por ti</span>`
+}
+let filtro = "todos"
+const aplicar = () => {
+  document.querySelectorAll(".item").forEach((li) => {
+    const n = li.dataset.n, hecho = !!marcados[n]
+    li.classList.toggle("hecho", hecho)
+    li.querySelector("input").checked = hecho
+    li.classList.toggle("oculto", (filtro === "P0" && li.dataset.pr !== "P0") || (filtro === "abiertos" && hecho))
+  })
+  document.querySelectorAll(".grupo").forEach((g) => {
+    const ol = g.nextElementSibling
+    g.classList.toggle("oculto", ![...ol.children].some((li) => !li.classList.contains("oculto")))
+  })
+  document.querySelectorAll("section.persona").forEach((s) => s.classList.toggle("oculto", ![...s.querySelectorAll(".item")].some((li) => !li.classList.contains("oculto"))))
+  pintarResumen()
+}
+document.addEventListener("change", (e) => {
+  if (!e.target.matches(".item input")) return
+  const n = e.target.dataset.n
+  if (e.target.checked) marcados[n] = 1; else delete marcados[n]
+  guardar(); aplicar()
+})
+document.querySelectorAll(".filtros button").forEach((b) => b.addEventListener("click", () => {
+  filtro = b.dataset.f
+  document.querySelectorAll(".filtros button").forEach((x) => x.setAttribute("aria-pressed", String(x === b)))
+  aplicar()
+}))
+// Resalta en el menú la persona en pantalla
+const enlaces = [...document.querySelectorAll(".menu a")]
+const io = new IntersectionObserver((es) => es.forEach((e) => {
+  if (e.isIntersecting) enlaces.forEach((a) => a.classList.toggle("activo", a.hash === "#" + e.target.id))
+}), { rootMargin: "-30% 0px -60% 0px" })
+document.querySelectorAll("section.persona").forEach((s) => io.observe(s))
+// Tema claro u oscuro
+document.getElementById("tema").addEventListener("click", () => {
+  const oscuro = document.documentElement.dataset.theme ? document.documentElement.dataset.theme === "dark" : matchMedia("(prefers-color-scheme: dark)").matches
+  document.documentElement.dataset.theme = oscuro ? "light" : "dark"
+})
+aplicar()
+</script>
+</body>
+</html>
