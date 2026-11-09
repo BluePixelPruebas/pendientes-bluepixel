@@ -98,7 +98,7 @@ footer{margin-top:32px;color:var(--quiet);font-size:13px}
 <script>
 // Cada pendiente: número, prioridad, título, detalle (HTML) y responsables (ids de PERSONAS)
 const PERSONAS = [
-  { id: "cano", nombre: "Cano", rol: "Infraestructura, Vercel, n8n y formularios" },
+  { id: "cano", nombre: "Cano", rol: "Infraestructura, n8n y formularios" },
   { id: "genaro", nombre: "Genaro", rol: "Servidor, DNS y redirecciones · <a href=\"guia-genaro.html\"><b>Guía paso a paso con todo lo que necesitas →</b></a>" },
   { id: "alan", nombre: "Alan", rol: "Código del sitio, diseño y material visual" },
   { id: "maria", nombre: "María (Dirección)", rol: "Decisiones de negocio y contenido propio" },
@@ -116,7 +116,7 @@ const P = [
   // 1. Antes de mover el dominio
   ["1.2","P0","Conectar los formularios","Definir <code>VITE_FORM_ENDPOINT</code> (webhook de n8n al ERP) y probar un envío real del contacto, el cotizador, el Diagnóstico BluePixel y «Envíame el resumen».",["cano","claude"]],
   ["1.4","P0","Destino de la pauta y landings /lp/*","Decidir si los anuncios van a <code>cotiza.bluepixel.mx</code> o a <code>bluepixel.ai/lp/*</code>. Esas landings no existen en el sitio nuevo: si se eligen, hay que construirlas antes del lanzamiento.",["maria","claude"]],
-  ["1.5","P0","Subir las redirecciones de .mx","Bulk Redirects de Cloudflare con <code>scripts/datos/redirecciones-bluepixel-mx-cloudflare.csv</code> (812 filas: URLs del sitemap de .mx, 301 antiguas de Webflow y una regla general). Quitar la regla bluepixel.mx→www. No tocar <code>cotiza.</code>, <code>n8n.</code> ni <code>api.erp.</code> Probar con Cloudflare Trace que la regla general no le gane a una específica. Guía: <code>PLAN_PUBLICACION_BLUEPIXEL_AI.md</code>. Detalle en la <a href=\"guia-genaro.html#mx\">guía</a>.",["genaro","cano"]],
+  ["1.5","P0","Subir las redirecciones de .mx","Bulk Redirects de Cloudflare con <code>scripts/datos/redirecciones-bluepixel-mx-cloudflare.csv</code> (812 filas: URLs del sitemap de .mx, 301 antiguas de Webflow y una regla general). Quitar la regla bluepixel.mx→www. No tocar <code>cotiza.</code>, <code>n8n.</code> ni <code>api.erp.</code> Probar con Cloudflare Trace que la regla general no le gane a una específica. Detalle en la <a href=\"guia-genaro.html#mx\">guía</a>.",["genaro","cano"]],
   ["1.6","P0","Variables de producción al compilar","<code>VITE_SITE_URL=https://bluepixel.ai</code> y <code>VITE_INDEXABLE=true</code> solo en el build de producción. Sin <code>VITE_INDEXABLE=true</code> el sitio queda fuera de Google y sin GTM, Mixpanel ni píxel. La vista previa se compila sin esa variable. Detalle en la <a href=\"guia-genaro.html#servidor\">guía</a>.",["genaro","cano"]],
   ["1.7","P0","Publicación desde GitLab","Con el proceso de DevOps: <code>npm ci && npm run build</code> (Node 20 o más) y copiar <code>dist/</code> al servidor. El log debe decir «prerender del contenido: N de N». Detalle en la <a href=\"guia-genaro.html#servidor\">guía</a>.",["genaro","claude"]],
   ["1.8","P0","MR de develop a test","19 commits (blog, dominio, SEO, prerender, ChatGPT Ads, temas del blog, webinar, redirecciones y ajustes de diseño). Fabián lo abre; Alan revisa sobre todo el prerender y la hidratación. Después, el MR de test a main es el paso a producción.",["fabian","alan"]],
