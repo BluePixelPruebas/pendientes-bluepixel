@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Guía de lanzamiento</title>
+<style>
+:root{--bg:#f6f7f9;--card:#fff;--fg:#0b1220;--quiet:#5b6577;--line:#e3e7ee;--accent:#0a6cff;--accent-soft:#e8f0ff;--p0:#c62828;--p0-bg:#fdecec;--ok:#1f8a4c;--ok-bg:#e8f6ee;--warn:#9a6700;--warn-bg:#fff6dd}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0b0f17;--card:#121826;--fg:#e8ecf3;--quiet:#9aa5b8;--line:#232c3d;--accent:#5a9bff;--accent-soft:#16233d;--p0:#ff8a80;--p0-bg:#3a1717;--ok:#5fd394;--ok-bg:#12291d;--warn:#ffd166;--warn-bg:#3a2e10}}
+:root[data-theme="dark"]{--bg:#0b0f17;--card:#121826;--fg:#e8ecf3;--quiet:#9aa5b8;--line:#232c3d;--accent:#5a9bff;--accent-soft:#16233d;--p0:#ff8a80;--p0-bg:#3a1717;--ok:#5fd394;--ok-bg:#12291d;--warn:#ffd166;--warn-bg:#3a2e10}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:16px}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+a{color:var(--accent)}
+code,pre{font:13px/1.5 ui-monospace,Consolas,monospace}
+code{background:var(--accent-soft);padding:1px 5px;border-radius:4px;word-break:break-word}
+pre{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px;overflow-x:auto;white-space:pre}
+.layout{display:grid;grid-template-columns:240px minmax(0,1fr);gap:32px;max-width:1120px;margin:0 auto;padding:32px 24px 80px}
+nav.menu{position:sticky;top:16px;align-self:start;max-height:calc(100vh - 32px);overflow:auto}
+.menu h2{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--quiet);margin:0 0 10px}
+.menu ol{margin:0;padding-left:20px}
+.menu li{margin:4px 0}
+.menu a{color:var(--fg);text-decoration:none}
+.menu a:hover{color:var(--accent)}
+.volver{display:inline-block;margin-bottom:18px;font-size:14px}
+h1{font-size:clamp(1.6rem,3vw,2.1rem);line-height:1.15;margin:0 0 8px;letter-spacing:-.01em}
+.lead{color:var(--quiet);max-width:72ch;margin:0}
+section{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px 24px;margin-top:22px}
+section h2{margin:0 0 4px;font-size:1.25rem;display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
+.tag{font-size:11px;font-weight:700;border-radius:4px;padding:1px 7px;color:var(--p0);background:var(--p0-bg)}
+.tag.p1{color:var(--warn);background:var(--warn-bg)}
+.ref{font-size:13px;color:var(--quiet)}
+section h3{font-size:1rem;margin:18px 0 6px}
+ul,ol{padding-left:22px}
+li{margin:4px 0}
+table{width:100%;border-collapse:collapse;font-size:14px;margin-top:8px}
+th,td{border-top:1px solid var(--line);padding:7px 8px;text-align:left;vertical-align:top}
+th{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--quiet)}
+td code{white-space:nowrap}
+.nota{border-left:3px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 8px 8px 0;margin:12px 0}
+.alerta{border-left:3px solid var(--p0);background:var(--p0-bg);padding:10px 14px;border-radius:0 8px 8px 0;margin:12px 0}
+.tema{position:fixed;right:16px;bottom:16px;font:inherit;font-size:13px;border:1px solid var(--line);background:var(--card);color:var(--fg);border-radius:999px;padding:8px 14px;cursor:pointer}
+@media (max-width:860px){.layout{grid-template-columns:1fr;padding:20px 16px 80px;gap:12px}nav.menu{position:static;max-height:none}section{padding:18px}td code{white-space:normal}}
+@media print{nav.menu,.tema,.volver{display:none}.layout{display:block}section{break-inside:avoid-page}}
+</style>
+</head>
+<body>
+<div class="layout">
+  <nav class="menu" aria-label="Contenido de la guía">
+    <h2>En esta guía</h2>
+    <ol>
+      <li><a href="#contexto">Qué se publica</a></li>
+      <li><a href="#servidor">Servidor de bluepixel.ai</a></li>
+      <li><a href="#sitio">Redirecciones del sitio</a></li>
+      <li><a href="#previa">Vista previa</a></li>
+      <li><a href="#dns">DNS de bluepixel.ai</a></li>
+      <li><a href="#mx">Redirecciones de .mx</a></li>
+      <li><a href="#verificacion">Search Console y Bing</a></li>
+      <li><a href="#dia">El día del lanzamiento</a></li>
+      <li><a href="#pruebas">Cómo probar</a></li>
+      <li><a href="#reversa">Plan de reversa</a></li>
+      <li><a href="#despues">Después del lanzamiento</a></li>
+    </ol>
+  </nav>
+  <main>
+    <a class="volver" href="./#genaro">← Volver a los pendientes</a>
+    <h1>Guía para Genaro: lanzamiento de bluepixel.ai</h1>
+    <p class="lead">Lo que necesita el sitio de tu lado, punto por punto. La configuración del servidor, el CI y la publicación siguen tu estándar de DevOps y el de Jovanny: aquí solo va qué tiene que hacer el sitio y los datos que necesitas. Lanzamiento acordado: <b>lunes 16 de noviembre</b>; lo urgente, listo el <b>viernes 13</b>. Actualizado el 9-nov-2026.</p>
+
+    <section id="contexto">
+      <h2>1. Qué se publica</h2>
+      <ul>
+        <li><b>El sitio:</b> el sitio Vite de Alan, en GitLab <code>bluepixel-page/bp-site</code>. Se trabaja en <code>develop</code>; <code>test</code> y <code>main</code> solo por MR.</li>
+        <li><b>Es estático:</b> se compila y se sirve la carpeta <code>dist/</code>. No hace falta Node en el servidor.</li>
+        <li><b>Dominio:</b> <code>bluepixel.ai</code> (español en <code>/</code>, inglés en <code>/en</code>). Todo <code>bluepixel.mx</code> redirige ahí.</li>
+        <li><b>Servidor:</b> DigitalOcean con nginx (<code>blue.blackpixel.mx</code>, IP <code>134.209.143.178</code>).</li>
+      </ul>
+    </section>
+
+    <section id="servidor">
+      <h2>2. Servidor de bluepixel.ai <span class="tag">P0</span> <span class="ref">puntos A.2, 1.6 y 1.7</span></h2>
+      <h3>Compilar</h3>
+      <pre>npm ci
+npm run build        # Node 20 o más. Sale en dist/</pre>
+      <p>El log debe terminar con «prerender del contenido: <i>N</i> de <i>N</i>». Si el número de la izquierda es menor, alguna página salió sin contenido.</p>
+      <h3>Variables al compilar</h3>
+      <table>
+        <tr><th>Variable</th><th>Producción (main)</th><th>Vista previa</th></tr>
+        <tr><td><code>VITE_SITE_URL</code></td><td><code>https://bluepixel.ai</code></td><td><code>https://blue.blackpixel.mx</code></td></tr>
+        <tr><td><code>VITE_INDEXABLE</code></td><td><code>true</code></td><td>no se define</td></tr>
+        <tr><td><code>VITE_FORM_ENDPOINT</code></td><td colspan="2">La URL del webhook de n8n; la da Cano (punto 1.2).</td></tr>
+      </table>
+      <div class="alerta">Sin <code>VITE_INDEXABLE=true</code> en producción, el sitio sale con <code>noindex</code>, sin sitemap y sin GTM, Mixpanel ni el píxel de OpenAI. Con ella en la vista previa, Google indexaría la copia y se ensuciaría la medición.</div>
+      <h3>Qué tiene que hacer nginx</h3>
+      <ol>
+        <li><b>URLs limpias:</b> cada página es un HTML en <code>dist/</code>. <code>/servicios/agentes-automatizacion</code> sirve <code>dist/servicios/agentes-automatizacion.html</code>. Además, <code>/pagina.html</code> y <code>/pagina/</code> redirigen con 301 a <code>/pagina</code>, y <code>/index.html</code> a <code>/</code>.</li>
+        <li><b>404 real:</b> lo que no exista responde código 404 con la página <code>dist/404.html</code>.</li>
+        <li><b>Caché:</b> <code>/assets/*</code> lleva huella en el nombre: caché de un año (<code>public, max-age=31536000, immutable</code>). Los HTML se revalidan siempre (<code>max-age=0, must-revalidate</code>), para que cada publicación se vea de inmediato.</li>
+        <li><b>Compresión:</b> gzip (o Brotli) para HTML, CSS, JS, JSON, SVG y XML.</li>
+        <li><b>Las 14 redirecciones del sitio:</b> en el <a href="#sitio">punto 3</a>.</li>
+        <li><b>HTTPS:</b> <code>http://</code> redirige a <code>https://</code> y <code>www.bluepixel.ai</code> a <code>bluepixel.ai</code>, con 301.</li>
+        <li><b>Encabezados de seguridad:</b> los de su estándar, cuidando que la política de contenido (CSP) permita lo que usa el sitio:
+          <pre>script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://*.google-analytics.com
+  https://www.googleadservices.com https://googleads.g.doubleclick.net https://bzrcdn.openai.com
+  https://www.clarity.ms https://scripts.clarity.ms https://snap.licdn.com https://bat.bing.com
+  https://assets.apollo.io
+connect-src 'self' https:
+img-src     'self' data: blob: https:
+media-src   'self' https://videos.pexels.com
+style-src   'self' 'unsafe-inline'
+font-src    'self' data:
+frame-src   https://www.youtube.com https://www.youtube-nocookie.com https://player.vimeo.com
+            https://www.googletagmanager.com https://td.doubleclick.net</pre>
+          Hoy el sitio la usaba en modo solo reporte (<code>Content-Security-Policy-Report-Only</code>): conviene empezar así y volverla obligatoria cuando no haya reportes. <code>media-src</code> incluye Pexels porque los videos de las páginas de servicio vienen de ahí.</li>
+      </ol>
+    </section>
+
+    <section id="sitio">
+      <h2>3. Redirecciones del propio sitio <span class="tag">P0</span> <span class="ref">punto A.2</span></h2>
+      <p>Catorce 301 dentro de bluepixel.ai: dos rutas viejas y 12 artículos del blog que se fusionaron porque competían entre sí. <b>Deben conservar la query string</b> (UTMs y gclid). Archivo: <a href="https://gitlab.blackpixel.mx/bluepixel-page/bp-site/-/blob/develop/scripts/datos/redirecciones-sitio.json"><code>scripts/datos/redirecciones-sitio.json</code></a>.</p>
+      <table>
+        <tr><th>De</th><th>A</th></tr>
+        <tr><td><code>/aviso-de-privacidad</code></td><td><code>/privacidad</code></td></tr>
+        <tr><td><code>/casos-de-exito</code></td><td><code>/casos-de-estudio</code></td></tr>
+        <tr><td><code>/blog/tendencias-ux-ui-2021</code></td><td><code>/blog/principales-tendencias-diseno-web-profesional</code></td></tr>
+        <tr><td><code>/blog/tendencias-diseno-ui-2023</code></td><td><code>/blog/principales-tendencias-diseno-web-profesional</code></td></tr>
+        <tr><td><code>/blog/tendencias-tecnologicas-diseno-ux-ui-2023</code></td><td><code>/blog/principales-tendencias-diseno-web-profesional</code></td></tr>
+        <tr><td><code>/blog/pagina-web-y-sus-tipos</code></td><td><code>/blog/descubre-diferentes-tipos-paginas-web-guia-completa</code></td></tr>
+        <tr><td><code>/blog/usabilidad-en-el-2023</code></td><td><code>/blog/tendencias-desarrollo-web-innovar-2025</code></td></tr>
+        <tr><td><code>/blog/inteligencia-artificial-ia-para-empresas</code></td><td><code>/blog/beneficios-ia-empresa</code></td></tr>
+        <tr><td><code>/en/blog/ux-ui-trends-for-2021</code></td><td><code>/en/blog/top-trends-in-professional-web-design</code></td></tr>
+        <tr><td><code>/en/blog/ui-design-trends-for-2023</code></td><td><code>/en/blog/top-trends-in-professional-web-design</code></td></tr>
+        <tr><td><code>/en/blog/ux-ui-design-technology-trends-for-2023</code></td><td><code>/en/blog/top-trends-in-professional-web-design</code></td></tr>
+        <tr><td><code>/en/blog/usability-in-2023</code></td><td><code>/en/blog/web-development-trends-innovate-2025</code></td></tr>
+        <tr><td><code>/en/blog/artificial-intelligence-ai-for-business</code></td><td><code>/en/blog/benefits-ai-company</code></td></tr>
+        <tr><td><code>/en/blog/web-development-trends-for-2023</code></td><td><code>/en/blog/web-development-trends-innovate-2025</code></td></tr>
+      </table>
+      <p class="ref">Si más adelante se fusionan otros artículos, el archivo se actualiza y te lo avisamos.</p>
+    </section>
+
+    <section id="previa">
+      <h2>4. Vista previa en blue.blackpixel.mx <span class="tag">P0</span> <span class="ref">punto A.9</span></h2>
+      <ul>
+        <li>Publicar <code>develop</code> compilado con <code>VITE_SITE_URL=https://blue.blackpixel.mx</code> y <b>sin</b> <code>VITE_INDEXABLE</code>.</li>
+        <li>De preferencia con usuario y contraseña (autenticación básica). En octubre, Google marcó como «sitio peligroso» una copia del sitio en otro dominio; con contraseña no pasa.</li>
+        <li>Sirve para que Fabián, Alan y Claude revisen el sitio en el servidor real antes de mover el dominio, y para probar ahí las 14 redirecciones y el 404.</li>
+      </ul>
+    </section>
+
+    <section id="dns">
+      <h2>5. DNS de bluepixel.ai <span class="tag">P0</span> <span class="ref">puntos A.3 y A.8</span></h2>
+      <ul>
+        <li>Registros <code>A</code> de <code>bluepixel.ai</code> y <code>www.bluepixel.ai</code> a <code>134.209.143.178</code> (y <code>AAAA</code> a <code>2604:a880:2:d0::11fc:b001</code> si se usa IPv6).</li>
+        <li>Hoy los servidores de nombres son de Afternic (GoDaddy) y la raíz muestra una página de estacionamiento: hay que quitar el estacionamiento antes de apuntarlo.</li>
+        <li>Bajar el TTL a 5 minutos dos días antes, para poder corregir rápido.</li>
+        <li><b>Recomendado (A.8):</b> llevar el DNS de bluepixel.ai a Cloudflare, donde ya está .mx, con la nube naranja (proxy). Así el sitio se sirve desde la red global de Cloudflare (Vercel lo hacía; un solo servidor no), con Brotli y protección contra ataques. Es gratis.</li>
+        <li>No hay correo en bluepixel.ai (MX nulo y SPF <code>-all</code>); está bien así mientras no se use (punto A.5).</li>
+      </ul>
+    </section>
+
+    <section id="mx">
+      <h2>6. Redirecciones de bluepixel.mx <span class="tag">P0</span> <span class="ref">punto 1.5</span></h2>
+      <p>Archivo: <a href="https://gitlab.blackpixel.mx/bluepixel-page/bp-site/-/blob/develop/scripts/datos/redirecciones-bluepixel-mx-cloudflare.csv"><code>scripts/datos/redirecciones-bluepixel-mx-cloudflare.csv</code></a> · 812 filas · formato de Bulk Redirects de Cloudflare.</p>
+      <h3>La lógica</h3>
+      <ul>
+        <li>En .mx, la raíz es el sitio en <b>inglés</b> y el español vive en <code>/es/...</code>.</li>
+        <li>Lo que está en <code>/es/...</code> va al español de bluepixel.ai: <code>/es/inicio</code> → <code>bluepixel.ai/</code>, <code>/es/blog/&lt;slug&gt;</code> → <code>/blog/&lt;slug&gt;</code>.</li>
+        <li>Lo de la raíz va al inglés: <code>/</code> → <code>bluepixel.ai/en</code>, <code>/about-us</code> → <code>/en/about-us</code>, <code>/post/&lt;slug&gt;</code> → <code>/en/blog/&lt;slug&gt;</code>.</li>
+        <li>Las URLs viejas de Webflow en español sin <code>/es</code> (<code>/blog-posts-espanol/...</code>, <code>/contacto</code>, <code>/sobre-nosotros</code>) van al español.</li>
+        <li>Lo que no tenga regla cae en la regla general: lo que esté bajo <code>/es</code> va al Home en español; lo demás, a <code>/en</code>. Todas las filas usan <i>subpath matching</i>; Cloudflare aplica la más específica.</li>
+        <li>Todas son 301 y conservan la query string. Cubren <code>bluepixel.mx</code> y <code>www.bluepixel.mx</code>; <b>no tocan</b> <code>cotiza.</code>, <code>n8n.</code> ni <code>api.erp.</code></li>
+      </ul>
+      <h3>Pasos en Cloudflare (cuenta de bluepixel.mx)</h3>
+      <ol>
+        <li><b>Antes del día:</b> en <i>Bulk Redirects</i>, crear una lista (por ejemplo, <code>bluepixel-mx-a-ai</code>) e importar el CSV.</li>
+        <li>Crear una regla de Bulk Redirects que use esa lista y <b>dejarla apagada</b>.</li>
+        <li><b>El día del lanzamiento</b>, después de que bluepixel.ai ya responda: encender la regla.</li>
+        <li><b>En el mismo momento</b>, quitar la regla actual <code>bluepixel.mx → www.bluepixel.mx</code>; si se queda, habría doble salto.</li>
+      </ol>
+      <p class="ref">El plan gratuito de Cloudflare alcanza para estas filas.</p>
+    </section>
+
+    <section id="verificacion">
+      <h2>7. Search Console y Bing <span class="tag">P0</span> <span class="ref">punto A.4</span></h2>
+      <ul>
+        <li>Fabián te pasa los registros <code>TXT</code> que generen Google Search Console y Bing Webmaster Tools para <code>bluepixel.ai</code>.</li>
+        <li>Se pueden agregar antes del lanzamiento: la verificación por DNS no depende de que el sitio esté arriba.</li>
+      </ul>
+    </section>
+
+    <section id="dia">
+      <h2>8. El día del lanzamiento, en este orden <span class="tag">P0</span> <span class="ref">punto 3.4</span></h2>
+      <ol>
+        <li>Compilar <code>main</code> con las variables de producción y publicarlo.</li>
+        <li>Apuntar el DNS de bluepixel.ai al servidor y confirmar el certificado.</li>
+        <li>Probar bluepixel.ai (<a href="#pruebas">punto 9</a>): Home, <code>/en</code>, un artículo, <code>/sitemap.xml</code>, <code>/robots.txt</code>, una URL inexistente y una de las 14 redirecciones.</li>
+        <li>Encender la regla de Bulk Redirects de .mx y quitar la de <code>www</code>.</li>
+        <li>Probar las redirecciones de .mx.</li>
+        <li>Avisar a Fabián: él hace el cambio de dirección en Search Console y avisa a Bing.</li>
+      </ol>
+    </section>
+
+    <section id="pruebas">
+      <h2>9. Cómo probar</h2>
+      <h3>bluepixel.ai</h3>
+      <pre>curl -I https://bluepixel.ai/no-existe                         # 404
+curl -I "https://bluepixel.ai/aviso-de-privacidad?utm_source=x"  # 301 → /privacidad?utm_source=x
+curl -I https://bluepixel.ai/blog.html                         # 301 → /blog
+curl -I https://www.bluepixel.ai/                              # 301 → https://bluepixel.ai/
+curl -s https://bluepixel.ai/robots.txt                        # sin "Disallow: /" y con el sitemap</pre>
+      <h3>bluepixel.mx</h3>
+      <pre>curl -I "https://www.bluepixel.mx/?utm_source=x&amp;gclid=y"     # 301 → https://bluepixel.ai/en?utm_source=x&amp;gclid=y
+curl -I https://www.bluepixel.mx/es/inicio                     # 301 → https://bluepixel.ai/
+curl -I https://bluepixel.mx/about-us                          # 301 → https://bluepixel.ai/en/about-us
+curl -I https://www.bluepixel.mx/es/blog/diseno-ux-ui-que-es-guia   # 301 → https://bluepixel.ai/blog/diseno-ux-ui-que-es-guia
+curl -I https://cotiza.bluepixel.mx/                           # igual que antes, sin redirigir a .ai</pre>
+      <p>Cada 301 debe llevar <b>directo</b> al destino final, sin un segundo salto.</p>
+      <h3>Prueba automática</h3>
+      <p>Desde el repo del sitio: <code>node scripts/verificar-lanzamiento.mjs</code>. Revisa el servidor, cada página del sitemap, una muestra de las redirecciones de .mx con UTMs y la velocidad. Para la vista previa: <code>node scripts/verificar-lanzamiento.mjs servidor paginas --sitio https://blue.blackpixel.mx</code>. Claude también la puede correr.</p>
+    </section>
+
+    <section id="reversa">
+      <h2>10. Plan de reversa <span class="tag">P0</span> <span class="ref">punto A.7</span></h2>
+      <ul>
+        <li>Si algo falla después de mover el dominio: <b>apagar la regla de Bulk Redirects de .mx</b> y volver a encender la de <code>www</code>. En minutos, bluepixel.mx vuelve a servir Webflow como hoy.</li>
+        <li>Si falla bluepixel.ai: volver a publicar la versión anterior de <code>dist/</code>.</li>
+        <li>Dejar escrito antes del 16-nov quién lo hace y cómo se avisa.</li>
+      </ul>
+    </section>
+
+    <section id="despues">
+      <h2>11. Después del lanzamiento <span class="tag p1">P1</span> <span class="ref">puntos A.5, A.6 y A.8</span></h2>
+      <ul>
+        <li><b>Mantener las redirecciones de .mx</b> al menos un año; mejor, de forma permanente.</li>
+        <li><b>Proteger el dominio (A.6):</b> renovación automática, bloqueo de transferencia y acceso de al menos dos personas. Hoy aparece con «renovación prohibida» en el registro público: confirmar con GoDaddy. Vence el 30-may-2030.</li>
+        <li><b>Correo (A.5):</b> si los correos del sitio (resumen del diagnóstico y recursos) salen desde una dirección @bluepixel.ai, configurar SPF, DKIM y DMARC; si salen desde @bluepixel.mx, no tocar nada.</li>
+        <li><b>Cloudflare como proxy (A.8)</b>, si no se hizo antes.</li>
+      </ul>
+    </section>
+  </main>
+</div>
+<button class="tema" type="button" id="tema">Cambiar tema</button>
+<script>
+document.getElementById("tema").addEventListener("click", () => {
+  const oscuro = document.documentElement.dataset.theme ? document.documentElement.dataset.theme === "dark" : matchMedia("(prefers-color-scheme: dark)").matches
+  document.documentElement.dataset.theme = oscuro ? "light" : "dark"
+})
+</script>
+</body>
+</html>
