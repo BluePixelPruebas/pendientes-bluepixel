@@ -113,7 +113,7 @@ style-src   'self' 'unsafe-inline'
 font-src    'self' data:
 frame-src   https://www.youtube.com https://www.youtube-nocookie.com https://player.vimeo.com
             https://www.googletagmanager.com https://td.doubleclick.net</pre>
-          Hoy el sitio la usaba en modo solo reporte (<code>Content-Security-Policy-Report-Only</code>): conviene empezar así y volverla obligatoria cuando no haya reportes. <code>media-src</code> incluye Pexels porque los videos de las páginas de servicio vienen de ahí.</li>
+          Hoy el sitio la usaba en modo solo reporte (<code>Content-Security-Policy-Report-Only</code>): conviene empezar así y volverla obligatoria cuando no haya reportes. <code>media-src</code> incluye Pexels porque los videos de las páginas de servicio vienen de ahí. Si en su estándar <code>connect-src</code> no es <code>https:</code> sino una lista, debe incluir <code>https://bzr.openai.com</code> (a donde el píxel de OpenAI manda los eventos; revisado en su código el 9-nov), además de Google, Clarity, LinkedIn, Bing y Mixpanel (<code>https://api-js.mixpanel.com</code>).</li>
       </ol>
     </section>
 
