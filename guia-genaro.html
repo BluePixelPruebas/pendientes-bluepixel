@@ -150,36 +150,41 @@ frame-src   https://www.youtube.com https://www.youtube-nocookie.com https://pla
     </section>
 
     <section id="dns">
-      <h2>5. DNS de bluepixel.ai <span class="tag">P0</span> <span class="ref">puntos A.3 y A.8</span></h2>
+      <h2>5. DNS de bluepixel.ai <span class="tag">P0</span> <span class="ref">punto A.3</span></h2>
       <ul>
         <li>Registros <code>A</code> de <code>bluepixel.ai</code> y <code>www.bluepixel.ai</code> a <code>134.209.143.178</code> (y <code>AAAA</code> a <code>2604:a880:2:d0::11fc:b001</code> si se usa IPv6).</li>
-        <li>Hoy los servidores de nombres son de Afternic (GoDaddy) y la raíz muestra una página de estacionamiento: hay que quitar el estacionamiento antes de apuntarlo.</li>
+        <li>Hoy los servidores de nombres son de Afternic (GoDaddy) y la raíz muestra una página de estacionamiento: hay que quitar el estacionamiento antes de apuntarlo. Si te conviene, el DNS de bluepixel.ai puede pasar a DigitalOcean, donde ya está el de bluepixel.mx.</li>
         <li>Bajar el TTL a 5 minutos dos días antes, para poder corregir rápido.</li>
-        <li><b>Recomendado (A.8):</b> llevar el DNS de bluepixel.ai a Cloudflare, donde ya está .mx, con la nube naranja (proxy). Así el sitio se sirve desde la red global de Cloudflare (Vercel lo hacía; un solo servidor no), con Brotli y protección contra ataques. Es gratis.</li>
         <li>No hay correo en bluepixel.ai (MX nulo y SPF <code>-all</code>); está bien así mientras no se use (punto A.5).</li>
       </ul>
     </section>
 
     <section id="mx">
       <h2>6. Redirecciones de bluepixel.mx <span class="tag">P0</span> <span class="ref">punto 1.5</span></h2>
-      <p>Archivo: <a href="https://gitlab.blackpixel.mx/bluepixel-page/bp-site/-/blob/develop/scripts/datos/redirecciones-bluepixel-mx-cloudflare.csv"><code>scripts/datos/redirecciones-bluepixel-mx-cloudflare.csv</code></a> · 812 filas · formato de Bulk Redirects de Cloudflare.</p>
+      <div class="alerta"><b>Corrección del 9-nov:</b> antes esta sección decía que las redirecciones iban en Cloudflare. Fue un error nuestro: el DNS de bluepixel.mx está en DigitalOcean, y el encabezado <code>Server: cloudflare</code> que se ve en .mx es de Webflow. Las redirecciones van en tu nginx.</div>
+      <p>Archivo: <a href="https://gitlab.blackpixel.mx/bluepixel-page/bp-site/-/blob/develop/scripts/datos/redirecciones-bluepixel-mx.csv"><code>scripts/datos/redirecciones-bluepixel-mx.csv</code></a> · 406 reglas (394 exactas y 12 por prefijo), las mismas para <code>bluepixel.mx</code> y <code>www.bluepixel.mx</code>. Columnas: <code>ruta</code>, <code>destino</code>, <code>coincidencia</code>. Si prefieres otro formato (un <code>map</code> de nginx o JSON), te lo generamos.</p>
+      <h3>Cómo se aplica la lista</h3>
+      <ul>
+        <li><b>exacta:</b> la ruta tal cual. <code>/ruta/</code> (con barra final) se trata igual que <code>/ruta</code>.</li>
+        <li><b>prefijo:</b> si la ruta no tiene regla exacta, gana el prefijo más largo que la contenga por segmentos completos. Por ejemplo, <code>/es/blog/un-slug-que-no-existe</code> cae en el prefijo <code>/es/blog</code> → <code>bluepixel.ai/blog</code>; <code>/es/otra-cosa</code> cae en <code>/es</code> → <code>bluepixel.ai/</code>; y cualquier otra ruta cae en <code>/</code> → <code>bluepixel.ai/en</code>.</li>
+        <li>Siempre <b>301</b> y conservando la query string (UTMs y gclid). En nginx, con <code>return 301 $destino$is_args$args;</code>.</li>
+      </ul>
       <h3>La lógica</h3>
       <ul>
         <li>En .mx, la raíz es el sitio en <b>inglés</b> y el español vive en <code>/es/...</code>.</li>
         <li>Lo que está en <code>/es/...</code> va al español de bluepixel.ai: <code>/es/inicio</code> → <code>bluepixel.ai/</code>, <code>/es/blog/&lt;slug&gt;</code> → <code>/blog/&lt;slug&gt;</code>.</li>
         <li>Lo de la raíz va al inglés: <code>/</code> → <code>bluepixel.ai/en</code>, <code>/about-us</code> → <code>/en/about-us</code>, <code>/post/&lt;slug&gt;</code> → <code>/en/blog/&lt;slug&gt;</code>.</li>
         <li>Las URLs viejas de Webflow en español sin <code>/es</code> (<code>/blog-posts-espanol/...</code>, <code>/contacto</code>, <code>/sobre-nosotros</code>) van al español.</li>
-        <li>Lo que no tenga regla cae en la regla general: lo que esté bajo <code>/es</code> va al Home en español; lo demás, a <code>/en</code>. Todas las filas usan <i>subpath matching</i>; Cloudflare aplica la más específica.</li>
-        <li>Todas son 301 y conservan la query string. Cubren <code>bluepixel.mx</code> y <code>www.bluepixel.mx</code>; <b>no tocan</b> <code>cotiza.</code>, <code>n8n.</code> ni <code>api.erp.</code></li>
+        <li>Lo que no tenga regla cae en los prefijos: lo que esté bajo <code>/es</code> va al Home en español; lo demás, a <code>/en</code>.</li>
+        <li>Cubren <code>bluepixel.mx</code> y <code>www.bluepixel.mx</code>; <b>no tocan</b> <code>cotiza.</code>, <code>n8n.</code> ni <code>api.erp.</code>, que son registros aparte en el mismo DNS.</li>
       </ul>
-      <h3>Pasos en Cloudflare (cuenta de bluepixel.mx)</h3>
+      <h3>Pasos (DNS de .mx en DigitalOcean y tu nginx)</h3>
       <ol>
-        <li><b>Antes del día:</b> en <i>Bulk Redirects</i>, crear una lista (por ejemplo, <code>bluepixel-mx-a-ai</code>) e importar el CSV.</li>
-        <li>Crear una regla de Bulk Redirects que use esa lista y <b>dejarla apagada</b>.</li>
-        <li><b>El día del lanzamiento</b>, después de que bluepixel.ai ya responda: encender la regla.</li>
-        <li><b>En el mismo momento</b>, quitar la regla actual <code>bluepixel.mx → www.bluepixel.mx</code>; si se queda, habría doble salto.</li>
+        <li><b>Hoy, para referencia y reversa:</b> la raíz <code>bluepixel.mx</code> tiene un registro <code>A</code> a <code>198.202.211.1</code> (Webflow) y <code>www</code> es un <code>CNAME</code> a <code>cdn.webflow.com</code>. Webflow hace hoy el salto de <code>bluepixel.mx</code> a <code>www</code>.</li>
+        <li><b>Antes del día:</b> bajar el TTL de esos dos registros a 5 minutos, configurar en nginx un sitio para <code>bluepixel.mx</code> y <code>www.bluepixel.mx</code> con la lista, y tener listo el certificado SSL de los dos nombres (con Let's Encrypt por DNS, o emitiéndolo justo después de mover los registros).</li>
+        <li><b>El día del lanzamiento</b>, después de que bluepixel.ai ya responda: apuntar <code>bluepixel.mx</code> y <code>www.bluepixel.mx</code> al servidor (<code>134.209.143.178</code>). Las dos responden el 301 directo a bluepixel.ai, sin pasar por <code>www</code>.</li>
+        <li>No borrar los registros de verificación que existan (por ejemplo, TXT de Google o de Webflow) ni los de <code>cotiza.</code>, <code>n8n.</code> y <code>api.erp.</code>.</li>
       </ol>
-      <p class="ref">El plan gratuito de Cloudflare alcanza para estas filas.</p>
     </section>
 
     <section id="verificacion">
@@ -188,7 +193,7 @@ frame-src   https://www.youtube.com https://www.youtube-nocookie.com https://pla
         <li><b>Google Search Console:</b> Daniel (SEO de Rocketing) da de alta <code>bluepixel.ai</code> como propiedad de tipo «Dominio» y te pasa un registro <code>TXT</code> (<code>google-site-verification=…</code>). Va en la raíz del dominio (<code>@</code>).</li>
         <li><b>Bing Webmaster Tools:</b> no necesita un registro aparte. Cuando Google ya verificó el dominio, Daniel importa el sitio desde Search Console. Solo si se verificara a mano, Bing pediría un registro <code>CNAME</code>.</li>
         <li><b>Cuándo:</b> antes del lanzamiento; la verificación por DNS no depende de que el sitio esté arriba.</li>
-        <li><b>Ojo:</b> el <code>TXT</code> tiene que quedar donde viva el DNS al final. Si el DNS de bluepixel.ai se mueve de GoDaddy a Cloudflare (punto A.8), hay que copiarlo o la verificación se pierde. Dile a Daniel dónde va a quedar antes de agregarlo.</li>
+        <li><b>Ojo:</b> el <code>TXT</code> tiene que quedar donde viva el DNS al final. Si el DNS de bluepixel.ai se mueve de GoDaddy a DigitalOcean, hay que copiarlo o la verificación se pierde. Dile a Daniel dónde va a quedar antes de agregarlo.</li>
       </ul>
     </section>
 
@@ -198,7 +203,7 @@ frame-src   https://www.youtube.com https://www.youtube-nocookie.com https://pla
         <li>Compilar <code>main</code> con las variables de producción y publicarlo.</li>
         <li>Apuntar el DNS de bluepixel.ai al servidor y confirmar el certificado.</li>
         <li>Probar bluepixel.ai (<a href="#pruebas">punto 9</a>): Home, <code>/en</code>, un artículo, <code>/sitemap.xml</code>, <code>/robots.txt</code>, una URL inexistente y una de las 14 redirecciones.</li>
-        <li>Encender la regla de Bulk Redirects de .mx y quitar la de <code>www</code>.</li>
+        <li>Apuntar <code>bluepixel.mx</code> y <code>www.bluepixel.mx</code> al servidor, con las redirecciones de .mx ya configuradas en nginx, y confirmar su certificado.</li>
         <li>Probar las redirecciones de .mx.</li>
         <li>Avisar a Daniel y a Fabián: Daniel sube el sitemap y hace el cambio de dirección en Search Console y en Bing.</li>
       </ol>
@@ -217,7 +222,10 @@ curl -s https://bluepixel.ai/robots.txt                        # sin "Disallow: 
 curl -I https://www.bluepixel.mx/es/inicio                     # 301 → https://bluepixel.ai/
 curl -I https://bluepixel.mx/about-us                          # 301 → https://bluepixel.ai/en/about-us
 curl -I https://www.bluepixel.mx/es/blog/diseno-ux-ui-que-es-guia   # 301 → https://bluepixel.ai/blog/diseno-ux-ui-que-es-guia
+curl -I https://www.bluepixel.mx/es/blog/no-existe             # 301 → https://bluepixel.ai/blog (prefijo)
+curl -I https://bluepixel.mx/cualquier-cosa                    # 301 → https://bluepixel.ai/en (prefijo /)
 curl -I https://cotiza.bluepixel.mx/                           # igual que antes, sin redirigir a .ai</pre>
+      <p>Antes del día se puede probar el nginx sin mover el DNS: <code>curl -I --resolve www.bluepixel.mx:443:134.209.143.178 https://www.bluepixel.mx/es/inicio</code> (con el certificado ya instalado; si no, con <code>-k</code>).</p>
       <p>Cada 301 debe llevar <b>directo</b> al destino final, sin un segundo salto.</p>
       <h3>Prueba automática</h3>
       <p>Desde el repo del sitio: <code>node scripts/verificar-lanzamiento.mjs</code>. Revisa el servidor, cada página del sitemap, una muestra de las redirecciones de .mx con UTMs y la velocidad. Para la vista previa: <code>node scripts/verificar-lanzamiento.mjs servidor paginas --sitio https://blue.blackpixel.mx</code>. Claude también la puede correr.</p>
@@ -226,20 +234,18 @@ curl -I https://cotiza.bluepixel.mx/                           # igual que antes
     <section id="reversa">
       <h2>10. Plan de reversa <span class="tag">P0</span> <span class="ref">punto A.7</span></h2>
       <ul>
-        <li>Si algo falla después de mover el dominio: <b>apagar la regla de Bulk Redirects de .mx</b> y volver a encender la de <code>www</code>. En minutos, bluepixel.mx vuelve a servir Webflow como hoy.</li>
+        <li>Si algo falla después de mover el dominio: regresar en el DNS de DigitalOcean la raíz <code>bluepixel.mx</code> a <code>A 198.202.211.1</code> y <code>www</code> a <code>CNAME cdn.webflow.com</code>. Con el TTL en 5 minutos, bluepixel.mx vuelve a servir Webflow como hoy. Por eso el sitio de Webflow y su dominio deben seguir publicados al menos 2 semanas después del lanzamiento.</li>
         <li>Si falla bluepixel.ai: volver a publicar la versión anterior de <code>dist/</code>.</li>
         <li>Dejar escrito antes del 16-nov quién lo hace y cómo se avisa.</li>
       </ul>
     </section>
 
     <section id="despues">
-      <h2>11. Después del lanzamiento <span class="tag p1">P1</span> <span class="ref">puntos A.5, A.6 y A.8</span></h2>
+      <h2>11. Después del lanzamiento <span class="tag p1">P1</span> <span class="ref">puntos A.5 y A.6</span></h2>
       <ul>
         <li><b>Mantener las redirecciones de .mx</b> al menos un año; mejor, de forma permanente.</li>
         <li><b>Proteger el dominio (A.6):</b> renovación automática, bloqueo de transferencia y acceso de al menos dos personas. Hoy aparece con «renovación prohibida» en el registro público: confirmar con GoDaddy. Vence el 30-may-2030.</li>
-        <li><b>Correo (A.5):</b> si los correos del sitio (resumen del diagnóstico y recursos) salen desde una dirección @bluepixel.ai, configurar SPF, DKIM y DMARC; si salen desde @bluepixel.mx, no tocar nada.</li>
-        <li><b>Cloudflare como proxy (A.8)</b>, si no se hizo antes.</li>
-      </ul>
+        <li><b>Correo (A.5):</b> si los correos del sitio (resumen del diagnóstico y recursos) salen desde una dirección @bluepixel.ai, configurar SPF, DKIM y DMARC; si salen desde @bluepixel.mx, no tocar nada.</li>      </ul>
     </section>
   </main>
 </div>
