@@ -59,6 +59,18 @@ ol.items{list-style:none;margin:0;padding:0}
 .item p{margin:4px 0 0;color:var(--quiet)}
 .item.hecho .tit,.item.hecho p{text-decoration:line-through;opacity:.55}
 .oculto{display:none!important}
+.item .por{display:block;margin-top:4px;font-size:12px;color:var(--ok)}
+.item input:disabled{cursor:progress;opacity:.5}
+.enlace{font:inherit;font-size:13px;background:none;border:0;padding:0;color:var(--accent);text-decoration:underline;cursor:pointer}
+dialog{border:1px solid var(--line);border-radius:14px;background:var(--card);color:var(--fg);padding:22px;max-width:min(92vw,380px)}
+dialog::backdrop{background:rgb(0 0 0 / .45)}
+dialog h2{margin:0 0 6px;font-size:1.1rem}
+dialog p{margin:0 0 14px;color:var(--quiet);font-size:14px}
+dialog label{display:block;font-size:13px;font-weight:600;margin:10px 0 4px}
+dialog input{width:100%;font:inherit;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--fg)}
+dialog .acciones{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}
+dialog button{font:inherit;font-size:14px;border-radius:999px;padding:7px 16px;cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--fg)}
+dialog button[value="ok"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
 .tema{position:fixed;right:16px;bottom:16px;font:inherit;font-size:13px;border:1px solid var(--line);background:var(--card);color:var(--fg);border-radius:999px;padding:8px 14px;cursor:pointer}
 footer{margin-top:32px;color:var(--quiet);font-size:13px}
 @media (max-width:860px){
@@ -82,11 +94,11 @@ footer{margin-top:32px;color:var(--quiet);font-size:13px}
       <h1>Pendientes del lanzamiento de bluepixel.ai</h1>
       <p>Actualizado el 9 de noviembre de 2026. Lanzamiento acordado: <b>lunes 16 de noviembre</b>. Los P0 deben quedar cerrados el <b>viernes 13</b>.</p>
       <div class="resumen" id="resumen"></div>
-      <p class="leyenda"><b>P0</b> bloquea el lanzamiento · <b>P1</b> importante, puede ir justo después · <b>P2</b> mejora. Las casillas que marques se guardan solo en tu navegador.</p>
+      <p class="leyenda"><b>P0</b> bloquea el lanzamiento · <b>P1</b> importante, puede ir justo después · <b>P2</b> mejora. <span id="modo">Las casillas que marques se guardan solo en tu navegador.</span></p>
       <div class="filtros" role="group" aria-label="Filtrar por prioridad">
         <button type="button" data-f="todos" aria-pressed="true">Todos</button>
         <button type="button" data-f="P0" aria-pressed="false">Solo P0</button>
-        <button type="button" data-f="abiertos" aria-pressed="false">Ocultar los que marqué</button>
+        <button type="button" data-f="abiertos" aria-pressed="false">Ocultar los hechos</button>
       </div>
     </header>
     <div id="personas"></div>
@@ -94,6 +106,17 @@ footer{margin-top:32px;color:var(--quiet);font-size:13px}
   </main>
 </div>
 <button class="tema" type="button" id="tema">Cambiar tema</button>
+<dialog id="cred">
+  <form method="dialog" id="cred-form">
+    <h2>¿Quién marca?</h2>
+    <p>Las palomas se comparten con todo el equipo. Se piden una sola vez en este navegador.</p>
+    <label for="cred-nombre">Tu nombre</label>
+    <input id="cred-nombre" name="nombre" autocomplete="name" maxlength="40" required>
+    <label for="cred-codigo">Código de equipo</label>
+    <input id="cred-codigo" name="codigo" type="password" autocomplete="off" required>
+    <div class="acciones"><button value="cancelar" formnovalidate>Cancelar</button><button value="ok">Guardar</button></div>
+  </form>
+</dialog>
 
 <script>
 // Cada pendiente: número, prioridad, título, detalle (HTML) y responsables (ids de PERSONAS)
@@ -212,9 +235,34 @@ const P = [
 const nombre = Object.fromEntries(PERSONAS.map((p) => [p.id, p.nombre]))
 const orden = { P0: 0, P1: 1, P2: 2 }
 const clave = (n) => "bp-pend-" + n
+// URL de la app web de Apps Script (termina en /exec; ver apps-script/Codigo.gs). No es secreta: para cambiar algo
+// se pide el código de equipo, que no está en esta página. Vacía, las casillas se guardan solo en este navegador.
+const API = ""
 let marcados = {}
-try { marcados = JSON.parse(localStorage.getItem("bp-pendientes") || "{}") } catch {}
-const guardar = () => { try { localStorage.setItem("bp-pendientes", JSON.stringify(marcados)) } catch {} }
+if (!API) try { marcados = JSON.parse(localStorage.getItem("bp-pendientes") || "{}") } catch {}
+const guardar = () => { if (!API) try { localStorage.setItem("bp-pendientes", JSON.stringify(marcados)) } catch {} }
+const leerCred = () => { try { const c = JSON.parse(localStorage.getItem("bp-pend-cred") || "null"); return c && c.codigo ? c : null } catch { return null } }
+const guardarCred = (c) => { try { c ? localStorage.setItem("bp-pend-cred", JSON.stringify(c)) : localStorage.removeItem("bp-pend-cred") } catch {} }
+const pedirCred = () => new Promise((listo) => {
+  const dlg = document.getElementById("cred"), f = document.getElementById("cred-form")
+  let previo = null
+  try { previo = JSON.parse(localStorage.getItem("bp-pend-cred") || "null") } catch {}
+  f.nombre.value = previo?.nombre || ""
+  f.codigo.value = ""
+  dlg.addEventListener("close", () => {
+    const nombre = f.nombre.value.trim(), codigo = f.codigo.value
+    if (dlg.returnValue === "ok" && nombre && codigo) { const c = { nombre, codigo }; guardarCred(c); listo(c) } else listo(null)
+  }, { once: true })
+  dlg.returnValue = ""
+  dlg.showModal()
+})
+const fechaCorta = (iso) => { const d = new Date(iso); return isNaN(d) ? "" : d.toLocaleDateString("es-MX", { day: "numeric", month: "short" }) }
+const cargar = async () => {
+  try {
+    const d = await (await fetch(API, { cache: "no-store" })).json()
+    if (d.ok) { marcados = d.estado; aplicar() }
+  } catch {}
+}
 
 const $personas = document.getElementById("personas"), $menu = document.getElementById("menu")
 for (const per of PERSONAS) {
@@ -239,7 +287,7 @@ for (const per of PERSONAS) {
 const total = P.length, tP0 = P.filter((x) => x[1] === "P0").length
 const pintarResumen = () => {
   const hechos = P.filter((x) => marcados[x[0]]).length
-  document.getElementById("resumen").innerHTML = `<span class="chip"><b>${total}</b> pendientes</span><span class="chip"><b>${tP0}</b> urgentes (P0)</span><span class="chip"><b>${hechos}</b> marcados por ti</span>`
+  document.getElementById("resumen").innerHTML = `<span class="chip"><b>${total}</b> pendientes</span><span class="chip"><b>${tP0}</b> urgentes (P0)</span><span class="chip"><b>${hechos}</b> ${API ? (hechos === 1 ? "hecho" : "hechos") : "marcados por ti"}</span>`
 }
 let filtro = "todos"
 const aplicar = () => {
@@ -247,6 +295,12 @@ const aplicar = () => {
     const n = li.dataset.n, hecho = !!marcados[n]
     li.classList.toggle("hecho", hecho)
     li.querySelector("input").checked = hecho
+    let por = li.querySelector(".por")
+    const info = marcados[n]
+    if (API && info && info.por) {
+      if (!por) { por = document.createElement("span"); por.className = "por"; li.querySelector(".tit").after(por) }
+      por.textContent = "Hecho por " + info.por + (fechaCorta(info.fecha) ? " · " + fechaCorta(info.fecha) : "")
+    } else if (por) por.remove()
     li.classList.toggle("oculto", (filtro === "P0" && li.dataset.pr !== "P0") || (filtro === "abiertos" && hecho))
   })
   document.querySelectorAll(".grupo").forEach((g) => {
@@ -256,11 +310,24 @@ const aplicar = () => {
   document.querySelectorAll("section.persona").forEach((s) => s.classList.toggle("oculto", ![...s.querySelectorAll(".item")].some((li) => !li.classList.contains("oculto"))))
   pintarResumen()
 }
-document.addEventListener("change", (e) => {
+document.addEventListener("change", async (e) => {
   if (!e.target.matches(".item input")) return
-  const n = e.target.dataset.n
-  if (e.target.checked) marcados[n] = 1; else delete marcados[n]
-  guardar(); aplicar()
+  const caja = e.target, n = caja.dataset.n, hecho = caja.checked
+  if (!API) {
+    if (hecho) marcados[n] = 1; else delete marcados[n]
+    guardar(); aplicar(); return
+  }
+  const cred = leerCred() || await pedirCred()
+  if (!cred) { aplicar(); return }
+  document.querySelectorAll(`.item input[data-n="${n}"]`).forEach((x) => { x.disabled = true })
+  try {
+    const d = await (await fetch(API, { method: "POST", body: JSON.stringify({ n, hecho, nombre: cred.nombre, codigo: cred.codigo }) })).json()
+    if (d.ok) marcados = d.estado
+    else if (d.error === "codigo") { guardarCred({ nombre: cred.nombre }); alert("El código de equipo no es correcto. Vuelve a marcar la casilla para escribirlo de nuevo.") }
+    else alert("No se pudo guardar. Intenta de nuevo.")
+  } catch { alert("No hay conexión con la hoja. Intenta de nuevo.") }
+  document.querySelectorAll(`.item input[data-n="${n}"]`).forEach((x) => { x.disabled = false })
+  aplicar()
 })
 document.querySelectorAll(".filtros button").forEach((b) => b.addEventListener("click", () => {
   filtro = b.dataset.f
@@ -279,6 +346,13 @@ document.getElementById("tema").addEventListener("click", () => {
   document.documentElement.dataset.theme = oscuro ? "light" : "dark"
 })
 aplicar()
+if (API) {
+  document.getElementById("modo").innerHTML = 'Las palomas se comparten con todo el equipo y queda registrado quién las puso. <button type="button" class="enlace" id="cambiar-cred">Cambiar mi nombre o código</button>'
+  document.getElementById("cambiar-cred").addEventListener("click", () => pedirCred())
+  cargar()
+  document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") cargar() })
+  setInterval(cargar, 120000)
+}
 </script>
 </body>
 </html>
