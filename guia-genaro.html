@@ -185,8 +185,10 @@ frame-src   https://www.youtube.com https://www.youtube-nocookie.com https://pla
     <section id="verificacion">
       <h2>7. Search Console y Bing <span class="tag">P0</span> <span class="ref">punto A.4</span></h2>
       <ul>
-        <li>Fabián te pasa los registros <code>TXT</code> que generen Google Search Console y Bing Webmaster Tools para <code>bluepixel.ai</code>.</li>
-        <li>Se pueden agregar antes del lanzamiento: la verificación por DNS no depende de que el sitio esté arriba.</li>
+        <li><b>Google Search Console:</b> Fabián da de alta <code>bluepixel.ai</code> como propiedad de tipo «Dominio» y te pasa un registro <code>TXT</code> (<code>google-site-verification=…</code>). Va en la raíz del dominio (<code>@</code>).</li>
+        <li><b>Bing Webmaster Tools:</b> no necesita un registro aparte. Cuando Google ya verificó el dominio, Fabián importa el sitio desde Search Console. Solo si se verificara a mano, Bing pediría un registro <code>CNAME</code>.</li>
+        <li><b>Cuándo:</b> antes del lanzamiento; la verificación por DNS no depende de que el sitio esté arriba.</li>
+        <li><b>Ojo:</b> el <code>TXT</code> tiene que quedar donde viva el DNS al final. Si el DNS de bluepixel.ai se mueve de GoDaddy a Cloudflare (punto A.8), hay que copiarlo o la verificación se pierde. Dile a Fabián dónde va a quedar antes de agregarlo.</li>
       </ul>
     </section>
 
