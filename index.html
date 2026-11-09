@@ -94,7 +94,7 @@ footer{margin-top:32px;color:var(--quiet);font-size:13px}
       <h1>Pendientes del lanzamiento de bluepixel.ai</h1>
       <p>Actualizado el 9 de noviembre de 2026. Lanzamiento acordado: <b>lunes 16 de noviembre</b>. Los P0 deben quedar cerrados el <b>viernes 13</b>.</p>
       <div class="resumen" id="resumen"></div>
-      <p class="leyenda"><b>P0</b> bloquea el lanzamiento · <b>P1</b> importante, puede ir justo después · <b>P2</b> mejora. <span id="modo">Las casillas que marques se guardan solo en tu navegador.</span></p>
+      <p class="leyenda"><b>P0</b> bloquea el lanzamiento · <b>P1</b> importante, puede ir justo después · <b>P2</b> mejora. <span id="modo">Cargando las palomas del equipo…</span></p>
       <div class="filtros" role="group" aria-label="Filtrar por prioridad">
         <button type="button" data-f="todos" aria-pressed="true">Todos</button>
         <button type="button" data-f="P0" aria-pressed="false">Solo P0</button>
@@ -241,7 +241,7 @@ const orden = { P0: 0, P1: 1, P2: 2 }
 const clave = (n) => "bp-pend-" + n
 // URL de la app web de Apps Script (termina en /exec; ver apps-script/Codigo.gs). No es secreta: para cambiar algo
 // se pide el código de equipo, que no está en esta página. Vacía, las casillas se guardan solo en este navegador.
-const API = ""
+const API = "https://script.google.com/a/macros/bluepixel.mx/s/AKfycbza7UwB7MZNQGfT7F_QgtXk5JUgk1QMDBS_NKp5Hod7b5Fc1v0AhRFzd2qMHTGJ4v2HOQ/exec"
 let marcados = {}
 if (!API) try { marcados = JSON.parse(localStorage.getItem("bp-pendientes") || "{}") } catch {}
 const guardar = () => { if (!API) try { localStorage.setItem("bp-pendientes", JSON.stringify(marcados)) } catch {} }
