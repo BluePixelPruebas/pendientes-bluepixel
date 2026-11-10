@@ -1,0 +1,61 @@
+{
+  "_nota": "301 del propio sitio bluepixel.ai, conservando la query string. Generado por scripts/redirecciones-bluepixel-mx.mjs.",
+  "redirecciones": [
+    {
+      "de": "/aviso-de-privacidad",
+      "a": "/privacidad"
+    },
+    {
+      "de": "/casos-de-exito",
+      "a": "/casos-de-estudio"
+    },
+    {
+      "de": "/blog/tendencias-ux-ui-2021",
+      "a": "/blog/principales-tendencias-diseno-web-profesional"
+    },
+    {
+      "de": "/blog/tendencias-diseno-ui-2023",
+      "a": "/blog/principales-tendencias-diseno-web-profesional"
+    },
+    {
+      "de": "/blog/tendencias-tecnologicas-diseno-ux-ui-2023",
+      "a": "/blog/principales-tendencias-diseno-web-profesional"
+    },
+    {
+      "de": "/blog/pagina-web-y-sus-tipos",
+      "a": "/blog/descubre-diferentes-tipos-paginas-web-guia-completa"
+    },
+    {
+      "de": "/blog/usabilidad-en-el-2023",
+      "a": "/blog/tendencias-desarrollo-web-innovar-2025"
+    },
+    {
+      "de": "/blog/inteligencia-artificial-ia-para-empresas",
+      "a": "/blog/beneficios-ia-empresa"
+    },
+    {
+      "de": "/en/blog/ux-ui-trends-for-2021",
+      "a": "/en/blog/top-trends-in-professional-web-design"
+    },
+    {
+      "de": "/en/blog/ui-design-trends-for-2023",
+      "a": "/en/blog/top-trends-in-professional-web-design"
+    },
+    {
+      "de": "/en/blog/ux-ui-design-technology-trends-for-2023",
+      "a": "/en/blog/top-trends-in-professional-web-design"
+    },
+    {
+      "de": "/en/blog/usability-in-2023",
+      "a": "/en/blog/web-development-trends-innovate-2025"
+    },
+    {
+      "de": "/en/blog/artificial-intelligence-ai-for-business",
+      "a": "/en/blog/benefits-ai-company"
+    },
+    {
+      "de": "/en/blog/web-development-trends-for-2023",
+      "a": "/en/blog/web-development-trends-innovate-2025"
+    }
+  ]
+}
